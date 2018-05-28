@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="../../static/css/static.css" />
+    <link rel="stylesheet" type="text/css" href="../css/index.css" />
+    <script type="text/javascript" src="../../static/js/vue.js"></script>
+    <title>客户列表</title>
+</head>
+<body>
+    <div class="custom-list-system">
+        <!--固定上部-->
+        <div class="static">
+            <div class="inner">
+                <!--顶部搜索-->
+                <search-mode @search-btn="search" v-model="searchText" placeholder="输入客户名称"></search-mode>
+                <!--//顶部搜索-->
+            </div>
+        </div>
+        <!--//固定上部-->
+        <!--客户列表-->
+        <list-mode :list="customer"></list-mode>
+        <!--//客户列表-->
+        <!--底部-->
+        <div class="static-footer">
+            <div class="inner">
+
+            </div>
+        </div>
+        <!--//底部-->
+    </div>
+    <script>
+        //搜索组件
+        var componentSearch = {
+            props:['placeholder','value'],
+            template:`
+                <div class="custom-search">
+                    <div class="cont box">
+                        <input class="box1" type="text" :placeholder="placeholder" :value="value" @input="$emit('input',$event.target.value)" />
+                        <button @click="$emit('search-btn')" class="btn"></button>
+                    </div>
+                </div>
+            `
+        };
+        //列表组件
+        var componentList = {
+            props:['list'],
+            template:`
+                <ul class="customer-list">
+                    <li v-for="(li,index) in list" :key="index">
+                        <a :href="li.link" class="box box-center">
+                            <div class="pic"><img :src="li.pic" /></div>
+                            <div class="box1">
+                                <p class="name overflow">{{li.name}}</p>
+                                <p class="ft-mid overflow text-gray" v-if="li.num">{{li.num}}</p>
+                                <p class="ft-mid overflow text-gray" v-if="li.addr">{{li.addr}}</p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            `
+        };
+        var page = new Vue({
+            el:'.custom-list-system',
+            components:{
+                'search-mode':componentSearch,
+                'list-mode':componentList
+            },
+            data:{
+                searchText:'',          //顶部搜索输入内容
+                customer:[
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'测试客户',num:'13541058507'},
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'测试客户',addr:'四川成都高新区'},
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'测试客户',num:'13541058507',addr:'四川成都高新区'}
+                ]
+            },
+            methods:{
+                search:function(){
+                    alert('点击了搜索'+this.searchText);
+                }
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="../../static/css/static.css" />
+    <link rel="stylesheet" type="text/css" href="../css/index.css" />
+    <script type="text/javascript" src="../../static/js/vue.js"></script>
+    <title>供应商中心</title>
+</head>
+<body>
+    <div class="supplier-center">
+        <!--固定上部-->
+        <div class="static">
+            <div class="static-pane">
+                <!--头部-->
+                <div class="header">
+                    <user-info :user="person"></user-info>
+                    <act-mode :lists="finalheadlist" :check="hasmsg" @login-out="loginOut"></act-mode>
+                </div>
+                <!--//头部-->
+                <!--数据总览-->
+                <mid-mode :numbers="mid"></mid-mode>
+                <!--//数据总览-->
+            </div>
+        </div>
+        <!--//固定上部-->
+        <main-mode :list="finalMenu"></main-mode>
+    </div>
+    <script>
+        //用户信息模块
+        var ComponentUser = {
+            props:['user'],
+            template:`
+                <div class="cont box box-center">
+                    <div class="pic"><img :src="user.pic" alt=""></div>
+                    <div class="box1">
+                        <p class="name ft-big overflow">{{user.name}}</p>
+                        <div class="detail ft-mid">
+                            <p class="overflow">账 号：{{user.account}}</p>
+                            <p class="overflow">版 本：{{user.version}}</p>
+                            <p class="overflow">有效期：{{user.time}}</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+        //头部操作模块
+        var ComponentAct = {
+            data:function(){
+                return{
+                    show:false,  //列表展开与否                    
+                }
+            },
+            props:['lists','check'],
+            template:`
+                <div class="act">
+                    <div class="act-item icon menu" @click.self="show=!show">
+                        <transition name="act">
+                            <div v-show="show" class="detail ft-sm">
+                                <ul>
+                                    <li v-for="(li,index) in lists" :key="index">
+                                        <a :href="li.link"><i class="icon" :class="li.icon"></i>{{li.text}}</a>
+                                    </li>
+                                    <li><a href="#" @click="$emit('login-out')"><i class="icon back"></i>退出</a></li>
+                                </ul>
+                            </div>
+                        </transition>
+                    </div>
+                    <div class="act-item icon msg">
+                        <a href="#"><i v-if="check"></i></a>
+                    </div>
+                </div>
+            `
+        };
+        //数据总览模块
+        var ComponentNum = {
+            props:['numbers'],
+            template:`
+                <div class="mid">
+                    <ul class="box box-center">
+                        <li v-for="(number,index) in numbers" :key='index' class="box1">
+                            <i class="icon" :class="number.icon"></i>
+                            <div class="info">
+                                <p class="num ft-big">{{number.num}}</p>
+                                <p class="ft-sm">{{number.text}}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            `
+        };
+        //主体模块
+        var ComponentMain = {
+            props:['list'],
+            template:`
+                <ul class="funclist">
+                    <li v-for="(li,index) in list" :key="index">
+                        <a :href="li.link" class="box box-center">
+                            <div class="inner">
+                                <i class="icon" :class="li.icon"></i>
+                                <p class="text-gray">{{li.text}}</p>
+                                <em v-if="li.num" class="ft-sm">{{li.num}}</em>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            `
+        };
+        var page = new Vue({
+            el:'.supplier-center',
+            components:{
+                'user-info':ComponentUser,
+                'act-mode':ComponentAct,
+                'mid-mode':ComponentNum,
+                'main-mode':ComponentMain
+            },
+            data:{
+                Proprietor:2,  //值为2的时候头部不显示积分，菜单显示邀请模块
+                hasmsg:true,   //是否有消息
+                IsWholesale:true,   //值为真 菜单显示对账模块  真假切换时客户菜单列表切换
+                headlists:[         
+                    {icon:'grade',text:'积分',link:'#'},
+                    {icon:'set',text:'设置',link:'#'},
+                    {icon:'wx',text:'微信账号',link:'#'}
+                ],
+                mid:[
+                    {icon:'icon1',num:165,text:'今日成交'},
+                    {icon:'icon2',num:165,text:'今日订单'},
+                    {icon:'icon3',num:95,text:'新增客户'}
+                ],
+                menu:[
+                    {icon:'func1',text:'客户',link:'#'},
+                    {icon:'func2',text:'商品',link:'#'},
+                    {icon:'func3',text:'订单',link:'#',num:38},
+                    {icon:'func4',text:'退换货',link:'#',num:5},
+                    {icon:'func5',text:'收款',link:'#'},
+                    {icon:'func6',text:'代下单',link:'#'},
+                    {icon:'func7',text:'对账',link:'#'},
+                    {icon:'func8',text:'商城',link:'#'},
+                    {icon:'func9',text:'邀请',link:'#'},
+                ],
+                person:{
+                    pic:'../images/img.png',
+                    name:'大众化科技',
+                    account:'18010695753',
+                    version:'独立批发系统',
+                    time:'2020-01-06 726天'
+                }
+            },  
+            created:function(){
+                var truelink = 'https://www.baidu.com',             //IsWholesale:true  客户模块链接
+                    falselink = 'https://cn.vuejs.org/v2/guide/',       //IsWholesale:false  客户模块链接
+                    length = this.menu.length; 
+                for(var i=0;i<length;i++){
+                    if(this.menu[i].text === '客户'){
+                        if(this.IsWholesale){
+                            this.menu[i].link = truelink;
+                        }
+                        else{
+                            this.menu[i].link = falselink;
+                        }                            
+                    }
+                };     
+            },         
+            computed:{
+                finalMenu:function(){                    
+                    //邀请、对账模块显示与否
+                    if((this.Proprietor!=2)&&(!this.IsWholesale)){
+                        this.menu = this.menu.filter(function(value,index){
+                            return (value.text != '邀请')&&(value.text != '对账')
+                        });
+                        return this.menu;
+                    }else if(!this.IsWholesale){
+                        this.menu = this.menu.filter(function(value,index){
+                            return value.text != '对账'
+                        });
+                        return this.menu;
+                    }else if(this.Proprietor!=2){
+                        this.menu = this.menu.filter(function(value,index){
+                            return value.text != '邀请'
+                        });
+                        return this.menu;
+                    }else{
+                        return this.menu;
+                    };
+                },
+                finalheadlist:function(){
+                    //头部积分显示与否
+                    if(this.Proprietor===2){
+                        this.headlists = this.headlists.filter(function(value,index){
+                            return value.text != '积分'
+                        });
+                        return this.headlists;
+                    }else{
+                        return this.headlists;
+                    }
+                }
+            },
+            methods:{
+                loginOut:function(){
+                    console.log('点击了退出');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
