@@ -15,13 +15,13 @@
         <div class="static">
             <div class="inner">
                 <!--顶部搜索-->
-                <search-mode @search-btn="search" v-model="searchText" placeholder="输入客户名称"></search-mode>
+                <search-mode @search-btn="search" v-model="searchText" placeholder="输入任意关键字"></search-mode>
                 <!--//顶部搜索-->
             </div>
         </div>
         <!--//固定上部-->
         <!--客户列表-->
-        <list-mode :list="customer"></list-mode>
+        <list-mode :list="finalCustomer"></list-mode>
         <!--//客户列表-->
         <!--底部-->
         <div class="static-footer">
@@ -71,14 +71,28 @@
             data:{
                 searchText:'',          //顶部搜索输入内容
                 customer:[
-                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'测试客户',num:'13541058507'},
-                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'测试客户',addr:'四川成都高新区'},
-                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'测试客户',num:'13541058507',addr:'四川成都高新区'}
-                ]
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'小明',num:'13541058507'},
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'张三',addr:'四川绵阳高新区'},
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'李张三三',addr:'四川成都青羊区'},
+                    {link:'#',pic:'http://scm318.test.366ec.net//UserFiles/Store146/20170925/Images/e2501a81779348de92e96267351e52c4.jpg',name:'李四',num:'13541058507',addr:'四川绵阳涪城区'}
+                ],
+                finalCustomer:[]           
+            },
+            created:function(){
+                this.finalCustomer = this.customer;
             },
             methods:{
                 search:function(){
-                    alert('点击了搜索'+this.searchText);
+                    var _txt = this.searchText,
+                        _customer = this.customer;
+                    if(_txt){
+                        this.finalCustomer = _customer.filter(function(item){                            
+                            var parttern = new RegExp(_txt,'g');
+                            return JSON.stringify(item).match(parttern);                                                
+                        })
+                    }else{
+                        this.finalCustomer = _customer;
+                    }
                 }
             }
         })
